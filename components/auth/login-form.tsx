@@ -18,6 +18,8 @@ import { Input } from "../ui/input";
 import CardWrapper from "./card-wrapper";
 import Link from "next/link";
 import { signIn } from "@/actions/auth.action";
+import { FromError } from "./form-error";
+import { FormSuccess } from "./form-success";
 
 export function LogInForm() {
   const [error, setError] = useState<string | undefined>();
@@ -100,6 +102,9 @@ export function LogInForm() {
               )}
             />
           </div>
+
+          <FromError message={error} />
+          <FormSuccess message={success} />
           <Button variant={"default"} type="submit" className=" w-full">
             Login
           </Button>

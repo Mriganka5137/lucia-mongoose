@@ -44,7 +44,7 @@ export const RegisterForm = () => {
       signUp(values).then((data) => {
         if (data.success) {
           setSuccess(data.success);
-          router.push("/dashboard");
+          // router.push("/dashboard");
         }
         setError(data.error);
       });
