@@ -1,7 +1,14 @@
 {
   "name": "lucia-mongoose",
   "version": "0.1.0",
-  "private": true,
+  "bin": {
+    "lucia-mongoose": "bin/cli.js"
+  },
+  "description": "Lucia authentication setup with MongoDB/Mongoose for a Next.js app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mriganka5137/lucia-mongoose.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
