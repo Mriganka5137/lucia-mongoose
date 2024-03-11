@@ -10,6 +10,8 @@ import { User } from "@/lib/models/user.model";
 import { generateVerificationToken } from "@/utils/tokens";
 import { sendVerificationEmail } from "@/utils/mail";
 import { getUserByEmail } from "@/utils/data/user";
+import { generateCodeVerifier, generateState } from "arctic";
+import { github, google } from "@/lib/oauth";
 
 export const signUp = async (values: z.infer<typeof SignUpSchema>) => {
   const validateData = SignUpSchema.safeParse(values);
@@ -91,6 +93,8 @@ export const signIn = async (values: z.infer<typeof SignInSchema>) => {
   };
 };
 
+export const signInWithGoogle = async (idToken: string) => {};
+
 export const signOut = async () => {
   try {
     const { session } = await auth();
@@ -108,5 +112,59 @@ export const signOut = async () => {
     );
   } catch (error: any) {
     return { error: error?.message };
+  }
+};
+
+export const createGoogleAuthorizationURL = async () => {
+  try {
+    const state = generateState();
+    const codeVerifier = generateCodeVerifier();
+
+    cookies().set("codeVerifier", codeVerifier, {
+      httpOnly: true,
+    });
+
+    cookies().set("state", state, {
+      httpOnly: true,
+    });
+
+    const authorizationURL = await google.createAuthorizationURL(
+      state,
+      codeVerifier,
+      {
+        scopes: ["email", "profile"],
+      }
+    );
+
+    return {
+      success: true,
+      data: authorizationURL,
+    };
+  } catch (error: any) {
+    return {
+      error: error?.message,
+    };
+  }
+};
+export const createGithubAuthorizationURL = async () => {
+  try {
+    const state = generateState();
+
+    cookies().set("state", state, {
+      httpOnly: true,
+    });
+
+    const authorizationURL = await github.createAuthorizationURL(state, {
+      scopes: ["user:email"],
+    });
+
+    return {
+      success: true,
+      data: authorizationURL,
+    };
+  } catch (error: any) {
+    return {
+      error: error?.message,
+    };
   }
 };

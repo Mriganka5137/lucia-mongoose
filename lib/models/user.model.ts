@@ -1,10 +1,11 @@
 import { Schema, models, model } from "mongoose";
 
-interface IUser extends Document {
+export interface IUser extends Document {
   email: string;
-  password: string;
+  password?: string;
   name: string;
   emailVerified: boolean;
+  profilePictureUrl?: string;
 }
 const userSchema = new Schema<IUser>(
   {
@@ -15,16 +16,17 @@ const userSchema = new Schema<IUser>(
     },
     name: {
       type: String,
-      required: true,
     },
     password: {
       type: String,
-      required: true,
     },
     emailVerified: {
       type: Boolean,
       default: false,
       required: true,
+    },
+    profilePictureUrl: {
+      type: String,
     },
   },
   { timestamps: true }

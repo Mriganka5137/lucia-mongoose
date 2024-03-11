@@ -105,7 +105,7 @@ export function LogInForm() {
 
           <FromError message={error} />
           <FormSuccess message={success} />
-          <Button variant={"default"} type="submit" className=" w-full">
+          <Button type="submit" className=" w-full">
             Login
           </Button>
         </form>
