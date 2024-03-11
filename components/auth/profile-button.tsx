@@ -11,6 +11,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import LogoutButton from "./LogoutButton";
 import { IUser } from "@/lib/models/user.model";
 import { GoPersonFill } from "react-icons/go";
+import { IoIosLogOut, IoMdSettings } from "react-icons/io";
+import Link from "next/link";
+
 interface ProfileButtonProps {
   user: IUser;
 }
@@ -27,7 +30,7 @@ const ProfileButton = ({ user }: ProfileButtonProps) => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[300px] p-5">
+      <DropdownMenuContent align="end" className="min-w-[300px] p-5">
         <DropdownMenuLabel className="flex gap-2">
           <div>
             <Avatar>
@@ -45,9 +48,17 @@ const ProfileButton = ({ user }: ProfileButtonProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <div className="space-y-2">
-          <DropdownMenuItem>Manage Account</DropdownMenuItem>
-          <DropdownMenuItem>
+        <div className="space-y-2 pb-5 mt-3">
+          <DropdownMenuItem className=" ">
+            <Link
+              href="/manage-account"
+              className="flex items-center gap-3 text-secondary-foreground/50 cursor-pointer hover:text-secondary-foreground"
+            >
+              <IoMdSettings className="" />
+              Manage Account
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className=" flex items-center gap-3 text-secondary-foreground/50 cursor-pointer">
             <LogoutButton />
           </DropdownMenuItem>
         </div>

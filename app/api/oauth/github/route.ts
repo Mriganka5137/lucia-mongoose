@@ -49,7 +49,6 @@ export const GET = async (req: NextRequest) => {
     });
 
     const githubData = await githubRes.json();
-    console.log(githubData);
     const mongoSession = await mongoose.startSession();
     let userForSession = null;
 

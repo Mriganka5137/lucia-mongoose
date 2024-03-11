@@ -64,7 +64,6 @@ export const GET = async (req: NextRequest) => {
     );
 
     const googleData = (await googleRes.json()) as GoogleUser;
-    console.log(googleData);
     const mongoSession = await mongoose.startSession();
     let userForSession = null;
 

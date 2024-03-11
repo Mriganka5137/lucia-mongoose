@@ -20,12 +20,21 @@ import { useRouter } from "next/navigation";
 import { signUp } from "@/actions/auth.action";
 import { FromError } from "./form-error";
 import { FormSuccess } from "./form-success";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from "../ui/input-otp";
 
 export const RegisterForm = () => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+
+  const [verifyEmail, setVerifyEmail] = useState(true);
+
   const form = useForm<z.infer<typeof SignUpSchema>>({
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
@@ -42,9 +51,12 @@ export const RegisterForm = () => {
 
     startTransition(() => {
       signUp(values).then((data) => {
-        if (data.success) {
-          setSuccess(data.success);
-          form.reset();
+        // if (data.success) {
+        //   setSuccess(data.success);
+        //   form.reset();
+        // }
+        if (data?.verifyEmail) {
+          setVerifyEmail(true);
         }
         setError(data.error);
       });
@@ -60,7 +72,7 @@ export const RegisterForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
-          <div className=" space-y-4">
+          <div className=" space-y-4 ">
             <FormField
               control={form.control}
               name="name"
