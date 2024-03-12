@@ -1,4 +1,9 @@
-import React from "react";
+import { auth } from "@/lib/auth";
+import { User } from "@/lib/models/user.model";
+import Link from "next/link";
+import { GoPersonFill } from "react-icons/go";
+import { IoMdSettings } from "react-icons/io";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,24 +12,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import LogoutButton from "./LogoutButton";
-import { IUser } from "@/lib/models/user.model";
-import { GoPersonFill } from "react-icons/go";
-import { IoIosLogOut, IoMdSettings } from "react-icons/io";
-import Link from "next/link";
 
-interface ProfileButtonProps {
-  user: IUser;
-}
-
-const ProfileButton = ({ user }: ProfileButtonProps) => {
-  console.log(user, "user");
+const ProfileButton = async () => {
+  const { user } = await auth();
+  const userInfo = await User.findById(user?.id);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src={user.profilePictureUrl && user.profilePictureUrl} />
+          <AvatarImage
+            src={userInfo?.profilePictureUrl && userInfo?.profilePictureUrl}
+          />
           <AvatarFallback className=" bg-primary/80">
             <GoPersonFill className="size-5 " />
           </AvatarFallback>
@@ -35,7 +34,7 @@ const ProfileButton = ({ user }: ProfileButtonProps) => {
           <div>
             <Avatar>
               <AvatarImage
-                src={user.profilePictureUrl && user.profilePictureUrl}
+                src={userInfo.profilePictureUrl && userInfo.profilePictureUrl}
               />
               <AvatarFallback className=" bg-primary/80">
                 <GoPersonFill className="size-5 " />
@@ -43,8 +42,8 @@ const ProfileButton = ({ user }: ProfileButtonProps) => {
             </Avatar>
           </div>
           <div>
-            <h3 className="text-sm font-bold capitalize">{user.name}</h3>
-            <p className="text-xs text-primary ">{user.email}</p>
+            <h3 className="text-sm font-bold capitalize">{userInfo.name}</h3>
+            <p className="text-xs text-primary ">{userInfo.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

@@ -11,6 +11,7 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === "production",
     },
   },
+  getUserAttributes: (attributes) => attributes,
 });
 
 export const auth = cache(async () => {
@@ -45,5 +46,10 @@ export const auth = cache(async () => {
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
+}
+
+interface DatabaseUserAttributes {
+  role: "user" | "admin";
 }

@@ -6,6 +6,7 @@ export interface IUser extends Document {
   name: string;
   emailVerified: boolean;
   profilePictureUrl?: string;
+  role: "user" | "admin";
 }
 const userSchema = new Schema<IUser>(
   {
@@ -27,6 +28,12 @@ const userSchema = new Schema<IUser>(
     },
     profilePictureUrl: {
       type: String,
+    },
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
   },
   { timestamps: true }
