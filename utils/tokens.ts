@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import { getVerificationTokenByEmail } from "./data/verificationToken";
 import { EmailVerification } from "@/lib/models/email-verification.model";
+import { getPasswordResetTokenByEmail } from "./data/password-reset-token";
+import { PasswordResetToken } from "@/lib/models/password-reset-token.model";
 // verification token
 export const generateVerificationToken = async (email: string) => {
   const token = uuidv4();
@@ -23,30 +25,24 @@ export const generateVerificationToken = async (email: string) => {
   return verficationToken;
 };
 
-// // password reset token
-// export const generatePasswordResetToken = async (email: string) => {
-//   const token = uuidv4();
-//   const expires = new Date(new Date().getTime() + 3600 * 1000); // 1 hour
-//   const existingToken = await getPasswordResetTokenByEmail(email);
+// password reset token
+export const generatePasswordResetToken = async (email: string) => {
+  const token = uuidv4();
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1 hour
+  const existingToken = await getPasswordResetTokenByEmail(email);
 
-//   if (existingToken) {
-//     await db.passwordResetToken.delete({
-//       where: {
-//         id: existingToken.id,
-//       },
-//     });
-//   }
+  if (existingToken) {
+    await PasswordResetToken.findByIdAndDelete(existingToken._id);
+  }
 
-//   const passwordResetToken = await db.passwordResetToken.create({
-//     data: {
-//       email,
-//       token,
-//       expires,
-//     },
-//   });
+  const passwordResetToken = await PasswordResetToken.create({
+    email,
+    token,
+    expires,
+  });
 
-//   return passwordResetToken;
-// };
+  return passwordResetToken;
+};
 
 // // generate two factor token
 

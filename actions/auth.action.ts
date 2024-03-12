@@ -1,17 +1,28 @@
 "use server";
 
-import { SignInSchema, SignUpSchema } from "@/schemas";
+import {
+  NewPasswordSchema,
+  ResetSchema,
+  SignInSchema,
+  SignUpSchema,
+} from "@/schemas";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { lucia, auth } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { User } from "@/lib/models/user.model";
-import { generateVerificationToken } from "@/utils/tokens";
-import { sendVerificationEmail } from "@/utils/mail";
+import {
+  generatePasswordResetToken,
+  generateVerificationToken,
+} from "@/utils/tokens";
+import { sendPasswordResetmail, sendVerificationEmail } from "@/utils/mail";
 import { getUserByEmail } from "@/utils/data/user";
 import { generateCodeVerifier, generateState } from "arctic";
 import { github, google } from "@/lib/oauth";
+import { getPasswordResetTokenByToken } from "@/utils/data/password-reset-token";
+import db from "@/lib/db";
+import { PasswordResetToken } from "@/lib/models/password-reset-token.model";
 
 export const signUp = async (values: z.infer<typeof SignUpSchema>) => {
   const validateData = SignUpSchema.safeParse(values);
@@ -93,8 +104,6 @@ export const signIn = async (values: z.infer<typeof SignInSchema>) => {
   };
 };
 
-export const signInWithGoogle = async (idToken: string) => {};
-
 export const signOut = async () => {
   try {
     const { session } = await auth();
@@ -167,4 +176,79 @@ export const createGithubAuthorizationURL = async () => {
       error: error?.message,
     };
   }
+};
+
+export const resetPassword = async (values: z.infer<typeof ResetSchema>) => {
+  const validatedFields = ResetSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid email!" };
+  }
+
+  const { email } = validatedFields.data;
+  const existingUser = await getUserByEmail(email);
+  if (!existingUser) return { error: "Email not found!" };
+
+  // 1. Generate a password reset token
+  const passwordResetToken = await generatePasswordResetToken(email);
+
+  // 2. Send the password reset email
+  await sendPasswordResetmail(
+    passwordResetToken.email,
+    passwordResetToken.token
+  );
+
+  return { success: "Reset email sent! Check your inbox!" };
+};
+
+export const newPassword = async (
+  values: z.infer<typeof NewPasswordSchema>,
+  token: string | null
+) => {
+  //   No token --> return error
+  if (!token) {
+    return { error: "Missing token" };
+  }
+
+  const validatedFields = NewPasswordSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields" };
+  }
+
+  const { password } = validatedFields.data;
+  const existsingToken = await getPasswordResetTokenByToken(token);
+  if (!existsingToken) {
+    return { error: "Invalid token" };
+  }
+
+  // if expired, return error
+  const hasExpired = new Date(existsingToken.expires) < new Date();
+  if (hasExpired) {
+    return { error: "Token has expired" };
+  }
+
+  //check if user exists
+  const existingUser = await getUserByEmail(existsingToken.email);
+  if (!existingUser) {
+    return { error: "Email does not exists!" };
+  }
+
+  //   has password and update
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await User.findByIdAndUpdate(existingUser._id, {
+    password: hashedPassword,
+  });
+  //   delete token
+  await PasswordResetToken.findByIdAndDelete(existsingToken._id);
+
+  const session = await lucia.createSession(existingUser._id, {});
+
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+
+  return { success: "Password updated" };
 };
