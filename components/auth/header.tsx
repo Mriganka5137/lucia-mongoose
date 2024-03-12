@@ -1,7 +1,5 @@
 import { Poppins } from "next/font/google";
-import { FaKey } from "react-icons/fa6";
-import { SiNextdotjs } from "react-icons/si";
-
+import { BsChatSquareQuote } from "react-icons/bs";
 const font = Poppins({
   subsets: ["latin"],
   weight: ["600"],
@@ -14,11 +12,8 @@ interface HeaderProps {
 export const Header = ({ label }: HeaderProps) => {
   return (
     <div className=" w-full flex-col items-center flex gap-y-4 justify-center">
-      <div className=" flex justify-between items-center gap-5">
-        <SiNextdotjs className=" size-12" />
-        +
-        <FaKey className="size-6" />
-      </div>
+      <BsChatSquareQuote className="size-10 hover:text-primary cursor-pointer transition-colors duration-500 ease-in-out" />
+
       <p className=" text-muted-foreground">{label} </p>
     </div>
   );

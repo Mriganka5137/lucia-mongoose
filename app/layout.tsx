@@ -19,8 +19,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Lucia Auth with Next.js and Mongoose",
-  description: "Authentication with Next.js and Mongoose",
+  title: "WhatsUp",
+  description: "A social media platform for everyone",
 };
 
 export default async function RootLayout({

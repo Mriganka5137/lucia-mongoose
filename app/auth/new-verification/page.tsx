@@ -1,7 +1,6 @@
 import NewVerificationForm from "@/components/auth/new-verification-form";
-import React from "react";
 
-const NewVerificationPage = () => {
+const NewVerificationPage = async () => {
   return <NewVerificationForm />;
 };
 

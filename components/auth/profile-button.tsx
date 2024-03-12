@@ -17,13 +17,12 @@ import LogoutButton from "./LogoutButton";
 const ProfileButton = async () => {
   const { user } = await auth();
   const userInfo = await User.findById(user?.id);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage
-            src={userInfo?.profilePictureUrl && userInfo?.profilePictureUrl}
-          />
+          <AvatarImage src={userInfo.profilePictureUrl} />
           <AvatarFallback className=" bg-primary/80">
             <GoPersonFill className="size-5 " />
           </AvatarFallback>
@@ -33,9 +32,7 @@ const ProfileButton = async () => {
         <DropdownMenuLabel className="flex gap-2">
           <div>
             <Avatar>
-              <AvatarImage
-                src={userInfo.profilePictureUrl && userInfo.profilePictureUrl}
-              />
+              <AvatarImage src={userInfo.profilePictureUrl} />
               <AvatarFallback className=" bg-primary/80">
                 <GoPersonFill className="size-5 " />
               </AvatarFallback>
